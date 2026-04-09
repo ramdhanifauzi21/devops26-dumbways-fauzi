@@ -9,6 +9,7 @@
 - Mysql-client
 - UFW
 - Sequalize
+- Aktif port 3306
 
 #### Step to Complite MANAGEMENT DATABASE
 
@@ -113,6 +114,11 @@ DELETE FROM transaction WHERE nama = 'DANI'; // must fail (DELETE command denied
 4. Open the MySQL port on the server firewall: `sudo ufw allow 3306`
 
 ## Deploy app wayshub
+
+### Prerequisite
+- Nodejs V10, 12, 14
+- PM2
+- Aktif port 3306, 5000, 3000, 40
 ### waysub-backend
 
 1. install NVM and make sure version 10, 12 or 14  [NodeJS 12](https://nodejs.org/en/download)
