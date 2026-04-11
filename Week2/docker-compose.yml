@@ -16,7 +16,7 @@ services:
     build: ./wayshub-backend
     container_name: kelompok1-migration-staging
     command: >
-      sh -c "until nc -z db 3306; do echo 'waiting for db...'; sleep 3; done>
+      sh -c "until nc -z db 3306; do echo 'waiting for db...'; sleep 3; done && npx sequelize-cli db:migrate"
     environment:
       DB_HOST: db
       DB_USER: k1
