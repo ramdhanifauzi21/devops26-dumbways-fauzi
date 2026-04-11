@@ -90,25 +90,29 @@
     4. create file on wayhshub `$ nano docker-compose.yml`
 
     ```
-    services:
-        database:
-            image: mysql
-            container_name: db_production
-            restart: always
-            MYSQL_ROOT_PASSWORD: Kelompk@1
-            MYSQL_USER: k1
-            MYSQL_PASSWORD: k1
-            MYSQL_DATABASE: wayshub
-            ports:
-                - "3306:3306"
-            volumes:
-                - ./db_data:/var/lib/mysql
-        volumes:
-            db_data:
+services:
+  db:
+    image: mysql:5.7
+    container_name: db-production
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: kelompk@1
+      MYSQL_DATABASE: wayshub
+      MYSQL_USER: k1
+      MYSQL_PASSWORD: k1
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - team1-network
 
-        networks:
-          team1-network:
-            driver: bridge
+volumes:
+  db_data:
+
+networks:
+  team1-network:
+    driver: bridge
     ```
    - allow ufw on port 3306 and 22
    - run docker compose `docker compose up -d`
