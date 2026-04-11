@@ -1,0 +1,75 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: kelompok1-db-staging
+    environment:
+      MYSQL_ROOT_PASSWORD: kelompok@1
+      MYSQL_DATABASE: wayshub
+      MYSQL_USER: k1
+      MYSQL_PASSWORD: k1
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - team1-network
+
+  migration:
+    build: ./wayshub-backend
+    container_name: kelompok1-migration-staging
+    command: >
+      sh -c "until nc -z db 3306; do echo 'waiting for db...'; sleep 3; done>
+    environment:
+      DB_HOST: db
+      DB_USER: k1
+      DB_PASS: k1
+      DB_NAME: wayshub
+      NODE_ENV: development
+    depends_on:
+      - db
+    networks:
+      - team1-network
+
+  backend:
+    image: kelompok1/backend:staging
+    build: ./wayshub-backend
+    container_name: kelompok1-backend-staging
+    environment:
+      DB_HOST: db
+      DB_USER: k1
+      DB_PASS: k1
+      DB_NAME: wayshub
+      NODE_ENV: development
+    depends_on:
+      - db
+    networks:
+      - team1-network
+    ports:
+      - "5000:5000"
+
+  frontend:
+    image: kelompok1/frontend:staging
+    build: ./wayshub-frontend
+    container_name: kelompok1-frontend-staging
+    depends_on:
+      - backend
+    networks:
+      - team1-network
+
+  webserver:
+    image: nginx:alpine
+    container_name: kelompok1-nginx-staging
+    volumes:
+      -  ./nginx:/etc/nginx/conf.d:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - team1-network
+
+volumes:
+  db_data:
+
+networks:
+  team1-network:
+    driver: bridge
