@@ -14,7 +14,7 @@
     
 - Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose (**STAGING**)
 
-    *FOLDER STRUCTURE*
+    **FOLDER STRUCTURE**
     ```
     dumbways-app/
     │
@@ -36,23 +36,46 @@
     ```
 
 1. Creat file: `nano docker.compos.yml` and copy this file → [docker-compose.yml](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-compose.yml)
-2. Make sure database and migration on docker-compose.yml is valid
-3. Create Dockerfile in folder `wayshub-backend`
-   - Configuration in `wayshub-backend/config/config.json` and adjust it to the database
-4. Create Dockerfile in folder `wayshub-frontend` configuration in config/config.json and change 'http://' to `http://api.kumpul1.staging.studentdumbways.my.id/api/v1`
-   - Configuration file `wayshub-frontend/src/config/api.js` and adjust
+2. Make sure database and migration on docker-compose.yml are successful
+3. Create Dockerfiles in the wayshub-backend and wayshub-frontend folders
+   - Dockerfile backend
+     ```
+     FROM node:12-alpine
+     WORKDIR /home/app
+     COPY . .
+     RUN npm install
+     EXPOSE 5000
+     CMD ["npm", "start"]
+     ```
+   - Dockerfile frontend
+     ```
+     FROM node:12-alpine as build
+     WORKDIR /home/app
+     COPY . .
+     RUN npm install
+     EXPOSE 3000
+     CMD ["npm", "start"]
+     ```
+4. Set config to connect frontend to backend, and the backend to database
+   - Config backend on folder `wayshub-backend/config/config.json`
+     - _make sure the db is the same_   
+       ![gambar](/Week2/Image/backend-config-staging.png)
+
+     - config frontend on folder `wayshub-frontend/src/config/api.js`
+       ![gambar](/Week2/Image/frontend-config-staging.png)
+       
 5. Create nginx configuration
    - Create folder nginx/
    - Create file default.conf
-   - Add program 
+   - Add program    
+   ![gambar](/Week2/Image/nginx-config-staging.png)
 6. Build file docker-compose.yml: `$ docker compose up -d`
 7. try the application on the web using DNS
 
 
 - Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose (**PRODUCTION**)
 
-1. create SERVER for deploy database
-
+1. create SERVER for deploy database     
    ![gambar](/Week2/Image/ServerCICD.png)  
 
    1. install docker with file `docker-install.sh` [script install docker](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-install.sh)
@@ -66,7 +89,7 @@
     3. create folder `$ mkdir wayshub`
     4. create file on wayhshub `$ nano docker-compose.yml`
 
-```
+    ```
     services:
         database:
             image: mysql
@@ -86,13 +109,12 @@
         networks:
           team1-network:
             driver: bridge
-```
+    ```
    - allow ufw on port 3306 and 22
    - run docker compose `docker compose up -d`
 
 
-2. create SERVER for deploy wayshub-backend, wayshub-frontend and nginx
-
+2. create SERVER for deploy wayshub-backend, wayshub-frontend and nginx     
    ![gambar](/Week2/Image/ServerApp.png)   
 
    1. install docker with file `docker-install.sh` [script install docker](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-install.sh)
@@ -104,15 +126,15 @@
        - To use Docker without sudo: `$ sudo usermod -aG docker kelompok-1`
        - login to user: `$ sudo su - kelompok-1`
     3. Make a new directory `mkdir wayshub` for the app, then clone the wayshub-backend and the wayshub-frontend`
-    4. Make Dockerfile for both the wayshub-backend and the wayshub-frontend
+    4. Create Dockerfiles in the wayshub-backend and wayshub-frontend folders
        - Dockerfile backend
        ```
-        FROM node:12-alpine
-        WORKDIR /home/app
-        COPY . .
-        RUN npm install
-        EXPOSE 5000
-        CMD ["npm", "start"]
+       FROM node:12-alpine
+       WORKDIR /home/app
+       COPY . .
+       RUN npm install
+       EXPOSE 5000
+       CMD ["npm", "start"]
        ```
        - Dockerfile frontend
        ```
@@ -131,8 +153,7 @@
        - config frontend on folder `wayshub-frontend/src/config/api.js`
        ![gambar](/Week2/Image/frontend-config.png)
    
-    6. Make .conf file for the web server /nginx
-
+    6. Make .conf file for the web server /nginx     
        ![gambar](/Week2/Image/nginx-config.png)
 
     7. create file on wayhshub `$ nano docker-compose.yml` and copy this file → [docker-compose.yml](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-compose.yml)
@@ -140,14 +161,11 @@
         - *`you can rename staging to production`*
     8. Run docker compose `$ docker compose up -d`
     9. The app can be accessed with a domain with all its functions
-       - frontend
-       
+       - frontend     
          ![gambar](/Week2/Image/test-frontend.png)
-       - backend
-       
+       - backend     
          ![gambar](/Week2/Image/test-backend.png) 
-    11. Try to register and login
-
+    11. Try to register and login     
         ![gambar](/Week2/Image/login.png)
 
 ## [Jenkins]
