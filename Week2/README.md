@@ -52,7 +52,7 @@
 - Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose (**PRODUCTION**)
 
 1. create SERVER for deploy database
-![gambar](devops21-dumbways-muhammadramdhanifauzi/Week2/Image/ServerCICD.png)  
+![gambar](/Week2/Image/ServerCICD.png)  
 
    1. install docker with file `docker-install.sh` [script install docker](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-install.sh)
       - add permission: `$ chmod +x docker-install.sh`
@@ -91,7 +91,7 @@
 
 
 2. create SERVER for deploy wayshub-backend, wayshub-frontend and nginx
-   
+![gambar](/Week2/Image/ServerApp.png)   
 
    1. install docker with file `docker-install.sh` [script install docker](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-install.sh)
       - add permission: `$ chmod +x docker-install.sh`
@@ -123,11 +123,26 @@
        ```
     5. Set config to connect frontend to backend, and the backend to database
        - Config backend on folder `wayshub-backend/config/config.json`
-         - make sure the db is the same and host fill with IP server deploy database
+         - _make sure the db is the same and host fill with IP server deploy database_
+         ![gambar](/Week2/Image/backend-config.png)
+
        - config frontend on folder `wayshub-frontend/src/config/api.js`
+         ![gambar](/Week2/Image/frontend-config.png)
+   
     6. Make .conf file for the web server /nginx
+       ![gambar](/Week2/Image/nginx-config.png)
+
     7. create file on wayhshub `$ nano docker-compose.yml` and copy this file → [docker-compose.yml](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/docker-compose.yml)
         - *`make sure to delete the db service and volumes db`*
+        - *`you can rename staging to production`*
     12. Run docker compose `$ docker compose up -d`
     13. The app can be accessed with a domain with all its functions
-    14. Try to register and login
+       ![gambar](/Week2/Image/test-frontend.png)
+       ![gambar](/Week2/Image/test-backend.png) 
+    15. Try to register and login
+        ![gambar](/Week2/Image/login.png)
+
+## [Jenkins]
+
+1. Install jenkins on top docker with `docker-compose.yml`
+2. 
