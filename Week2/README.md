@@ -89,7 +89,7 @@
     3. create folder `$ mkdir wayshub`
     4. create file on wayhshub `$ nano docker-compose.yml`
 
-    ```
+```
 services:
   db:
     image: mysql:5.7
@@ -113,7 +113,7 @@ volumes:
 networks:
   team1-network:
     driver: bridge
-    ```
+```
    - allow ufw on port 3306 and 22
    - run docker compose `docker compose up -d`
 
