@@ -175,5 +175,32 @@ networks:
 
 ## [Jenkins]
 
-1. Install jenkins on top docker with `docker-compose.yml`
-2. 
+### Install Jenkins on top Docker with docker-compose.yaml
+1. Create folder `wayshub-app`: `$ mkdir wayshub-app`
+2. Go to folder `$ cd wayshub-app` and create file `$ nano docker-compose.yml`
+```
+nano docker-compose.yaml
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+```
+4. Run docker `$ docker compose up -d`
+5. Get admin password `$ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` copy password
+6. Open `http:ipserver:8080` and paste password admin
+7. Select plugins to install, Make sure SSH Agent is selected and proceed by clicking install
+8. Create user
+9. Setup URL, I'm just gonna leave it at IP address and setup reverse proxy later
+10. Start using jenkins
+11. Create ssh-key on jenkins server: `ssh-keygen -t rsa -b 4096`
+12. Copy the .pub key file: `cat ~/.ssh/id_rsa.pub`
+13. Paste on App server:  `~/.ssh/authorized_keys`
+14. Go to Manage Jenkins -> Security and change the _Host Key Verification to Accept first connection_ and click save.
+15.  
