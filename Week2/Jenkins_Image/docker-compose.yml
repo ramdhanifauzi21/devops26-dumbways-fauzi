@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: db-production
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: kelompk@1
+      MYSQL_DATABASE: wayshub
+      MYSQL_USER: k1
+      MYSQL_PASSWORD: k1
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - team1-network
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: wayshub-jenkins
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - team1-network
+
+  webserver:
+    image: nginx:alpine
+    container_name: jenkins-nginx
+    restart: always
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - jenkins
+    networks:
+      - team1-network
+
+volumes:
+  db_data:
+  jenkins_data:
+
+networks:
+  team1-network: 
+    name: team1-network
+    driver: bridge
