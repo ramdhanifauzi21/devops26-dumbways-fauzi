@@ -201,11 +201,11 @@ services:
   7. Choose plugins you want install, Make sure SSH Agent is selected and proceed by clicking install      
   ![gambar](/Week2/Jenkins_Image/plugin-jenkins.png)        
   ![gambar](/Week2/Jenkins_Image/install-plugin-jenkins.png)         
-  9. Create user
+  8. Create user        
   ![gambar](/Week2/Jenkins_Image/createuser-jenkins.png)
-  10. For the setup URL, I'll just leave it at the IP address and setup the reverse proxy later.
+  9. For the setup URL, I'll just leave it at the IP address and setup the reverse proxy later.
   ![gambar](/Week2/Jenkins_Image/intance-conf-jenkins.png)
-  11. Start using jenkins     
+  10. Start using jenkins     
   ![gambar](/Week2/Jenkins_Image/start-jenkins.png)
 
 - **Setup SSH-KEY on your local Jenkins server, so you can log in to the server using SSH-KEY**
@@ -276,10 +276,10 @@ git push -u origin main
    ![gambar](/Week2/Jenkins_Image/config-pipeline-frontend.png)     
     - New Item -> Enter name "wayshub-frontend" -> Select pipeline -> make sure trigger select *GitHub hook trigger for GITScm polling* -> Repository fill with github wayshub-frontend-> save   
 
-6. You can build now
-![gambar](/Week2/Jenkins_Image/build-pipeline-frontend.png)      
-![gambar](/Week2/Jenkins_Image/build-pipeline-backend.png)       
-![gambar](/Week2/Jenkins_Image/Hasilbuild-backend-frontend.png)
+6. You can build now    
+![gambar](/Week2/Jenkins_Image/build-pipeline-frontend.png)          
+![gambar](/Week2/Jenkins_Image/build-pipeline-backend.png)           
+![gambar](/Week2/Jenkins_Image/Hasilbuild-backend-frontend.png)    
 
 7. Auto triger SCM
     - Go to github -> repo wayshub-frontend -> settings -> Webhook -> Add webhook -> Enter the password github ->     
@@ -309,38 +309,41 @@ git push -u origin main
     Add:     
     ![gambar](/Week2/Jenkins_Image/step-action-secrets-variable.png)
 
-    `DOCKERHUB_USERNAME` = ramdhanifauzi 
-        - Name: DOCKERHUB_USERNAME
-        - Secret: ramdhanifauzi
-        - Add secret
-    `DOCKERHUB_TOKEN` = token Docker Hub
-        - Name: DOCKERHUB_TOKEN
-        - Secret: paste token Docker Hub 
-        - Add secret
-    `SSH_PRIVATE_KEY` = private key server 2
-        - Name: SSH_PRIVATE_KEY
-        - Secret: paste private key server 2
-        - Add secret
-    `DISCORD_WEBHOOK` = URL webhook Discord
-        - Name: DISCORD_WEBHOOK
-        - Secret: paste URL webhook Discord 
-        - Add secret       
+    `DOCKERHUB_USERNAME` = ramdhanifauzi     
+        - Name: DOCKERHUB_USERNAME    
+        - Secret: ramdhanifauzi    
+        - Add secret    
+    `DOCKERHUB_TOKEN` = token Docker Hub    
+        - Name: DOCKERHUB_TOKEN    
+        - Secret: paste token Docker Hub     
+        - Add secret        
+    `SSH_PRIVATE_KEY` = private key server 2        
+        - Name: SSH_PRIVATE_KEY        
+        - Secret: paste private key server 2        
+        - Add secret        
+    `DISCORD_WEBHOOK` = URL webhook Discord        
+        - Name: DISCORD_WEBHOOK        
+        - Secret: paste URL webhook Discord         
+        - Add secret               
+        
     ![gambar](/Week2/Jenkins_Image/action-secrets-variable.png)
+   
     
-2. Create folder and file on the server 2
+3. Create folder and file on the server 2
     ```bash
     cd ~/wayshub-app/wayshub-frontend
     mkdir -p .github/workflows
     nano .github/workflows/ci.yml
     ```
-    [Script .github/workflows/ci.yml]()
-3. Push to github
+    Copy this script to .github/workflows/ci.yml[Script .github/workflows/ci.yml](https://github.com/kelompok1-dumbways/wayshub-frontend/blob/production/.github/workflows/ci.yml)
+    
+4. Push to github
     ``` bash
     git add .github/workflows/ci.yml
     git commit -m "add github actions workflow"
     git push origin production
     ```
-4. Creat pipline github actions runner
+5. Creat pipline github actions runner
     - GitHub repository wayshub-frontend -> settings -> Actions -> runners -> New self-hosted runner -> Select Lunux        
       ![gambar](/Week2/Jenkins_Image/step-runners.png)    
       ![gambar](/Week2/Jenkins_Image/hasil-runners.png)
@@ -361,10 +364,10 @@ git push -u origin main
     # Run
     ./run.sh
     ```
-5. Open `https://github.com/kelompok1-dumbways/wayshub-frontend/actions` for the progress pipeline
+6. Open `https://github.com/kelompok1-dumbways/wayshub-frontend/actions` for the progress pipeline
 ![gambar](/Week2/Jenkins_Image/hasil-githubaction.png)     
   
-6. Notification discord
+7. Notification discord
     - Setting discord    
     ![gambar](/Week2/Jenkins_Image/setting-discord-githubaction.png)
     - Notification    
