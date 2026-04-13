@@ -175,9 +175,9 @@ networks:
 
 ## [Jenkins]
 
-### Install Jenkins on top Docker with docker-compose.yaml
-1. Create folder `wayshub-app`: `$ mkdir wayshub-app`
-2. Go to folder `$ cd wayshub-app` and create file `$ nano docker-compose.yml`
+- Install Jenkins on top Docker with docker-compose.yaml
+  1. Create folder `wayshub-app`: `$ mkdir wayshub-app`
+  2. Go to folder `$ cd wayshub-app` and create file `$ nano docker-compose.yml`
 ```
 nano docker-compose.yaml
 
@@ -192,15 +192,42 @@ services:
     volumes:
       - ./jenkins_home:/var/jenkins_home
 ```
-4. Run docker `$ docker compose up -d`
-5. Get admin password `$ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` copy password
-6. Open `http:ipserver:8080` and paste password admin
-7. Select plugins to install, Make sure SSH Agent is selected and proceed by clicking install
-8. Create user
-9. Setup URL, I'm just gonna leave it at IP address and setup reverse proxy later
-10. Start using jenkins
-11. Create ssh-key on jenkins server: `ssh-keygen -t rsa -b 4096`
-12. Copy the .pub key file: `cat ~/.ssh/id_rsa.pub`
-13. Paste on App server:  `~/.ssh/authorized_keys`
-14. Go to Manage Jenkins -> Security and change the _Host Key Verification to Accept first connection_ and click save.
-15.  
+  3. Run docker `$ docker compose up -d`        
+  4. Get admin password `$ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword` copy password    
+  5. Open `http:ipserver:8080` and paste password admin        
+  ![gambar](/Week2/Jenkins_Image/unlock-jenkins.png)     
+  6. Select *plugins to install*       
+  ![gambar](/Week2/Jenkins_Image/costumize-jenkins.png)     
+  7. Choose plugins you want install, Make sure SSH Agent is selected and proceed by clicking install      
+  ![gambar](/Week2/Jenkins_Image/plugin-jenkins.png)        
+  ![gambar](/Week2/Jenkins_Image/install-plugin-jenkins.png)         
+  9. Create user
+  ![gambar](/Week2/Jenkins_Image/createuser-jenkins.png)
+  10. For the setup URL, I'll just leave it at the IP address and setup the reverse proxy later.
+  ![gambar](/Week2/Jenkins_Image/intance-conf-jenkins.png)
+  11. Start using jenkins
+  ![gambar](/Week2/Jenkins_Image/start-jenkins.pn)
+
+- Setup SSH-KEY on your local Jenkins server, so you can log in to the server using SSH-KEY
+  1. Create ssh-key on jenkins server: 
+  ```
+  docker exec - wayshub-jenkins bash
+  ssh-keygen -t rsa -b 4096 -C "jenkins"
+  
+  # COPY rsa.pub to server app
+  ssh-copy-id -i ~/.ssh/id_rsa.pub kelompok-1@103.55.37.38
+  exit
+  ```
+
+- Setup Reverse Proxy Jenkins
+  1. Add program in `docker-compose.yml`
+  
+  2. Config nginx/default.conf
+  
+  3. Run `docker compose up -d`
+  4. try opening jenkins with dns
+ 
+- Create job jenkins wayshub-frontend and wayshub-backend, Pull from repository, Push to Docker Hub, Auto trigger every time there is a change in SCM, and Create a job notification to Discord
+  1. 
+
+  
