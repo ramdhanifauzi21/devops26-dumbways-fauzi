@@ -175,7 +175,7 @@ networks:
 
 ## [Jenkins]
 
-- Install Jenkins on top Docker with docker-compose.yaml
+- **Install Jenkins on top Docker with docker-compose.yaml**
   1. Create folder `wayshub-app`: `$ mkdir wayshub-app`
   2. Go to folder `$ cd wayshub-app` and create file `$ nano docker-compose.yml`
 ```
@@ -205,29 +205,168 @@ services:
   ![gambar](/Week2/Jenkins_Image/createuser-jenkins.png)
   10. For the setup URL, I'll just leave it at the IP address and setup the reverse proxy later.
   ![gambar](/Week2/Jenkins_Image/intance-conf-jenkins.png)
-  11. Start using jenkins
-  ![gambar](/Week2/Jenkins_Image/start-jenkins.pn)
+  11. Start using jenkins     
+  ![gambar](/Week2/Jenkins_Image/start-jenkins.png)
 
-- Setup SSH-KEY on your local Jenkins server, so you can log in to the server using SSH-KEY
-  1. Create ssh-key on jenkins server: 
+- **Setup SSH-KEY on your local Jenkins server, so you can log in to the server using SSH-KEY**
+
+1. Create ssh-key on jenkins server generet to server 1: 
   ```
   docker exec - wayshub-jenkins bash
   ssh-keygen -t rsa -b 4096 -C "jenkins"
   
-  # COPY rsa.pub to server app
+  # COPY id_rsa.pub to server app
   ssh-copy-id -i ~/.ssh/id_rsa.pub kelompok-1@103.55.37.38
   exit
   ```
+  2. Generet id_rsa private to jenkins
+     - Open `http:ipserver:8080`
+     - Manage -> credential -> system -> globall -> add -> Add SSH Username with private key    
+       ![gambar](/Week2/Jenkins_Image/privatessh-jenkins.png)
 
-- Setup Reverse Proxy Jenkins
-  1. Add program in `docker-compose.yml`
-  
-  2. Config nginx/default.conf
-  
-  3. Run `docker compose up -d`
-  4. try opening jenkins with dns
+
+- **Setup reverse proxy**
+ 1. Copy docker compose [Script docker compose server 2](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/Jenkins_Image/docker-compose.yml)
  
-- Create job jenkins wayshub-frontend and wayshub-backend, Pull from repository, Push to Docker Hub, Auto trigger every time there is a change in SCM, and Create a job notification to Discord
-  1. 
+ 2. Config nginx/default.conf     
+![gambar](/Week2/Jenkins_Image/config-nginx.png)
 
+ 3. Run `docker compose up -d --build`
+ 4. try opening jenkins with dns      
+ ![gambar](/Week2/Jenkins_Image/Interface-jenkins.png)
+
+ 
+- **Create job jenkins wayshub-frontend and wayshub-backend, Pull from repository, Push to Docker Hub, Auto trigger every time there is a change in SCM, and Create a job notification to Discord**
+
+1. on the server 2(jenkins server) 
+    - `cd wayshub-app/wayshub-fronend/` create `nano Jenkinsfile` Copy this script [Script Jenkinsfile](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/Jenkins_Image/Jenkinsfile-frontend)
+    - `cd wayshub-app/wayshub-backend/` create `nano Jenkinsfile` Copy this script [Script Jenkinsfile](https://github.com/ramdhanifauzi21/devops21-dumbways-muhammadramdhanifauzi/blob/main/Week2/Jenkins_Image/Jenkinsfile-backend)
+2. Push to github   
+    - Make sure server 1 connect to github, you can connect with SSH pub   
+```
+# Folder wayshub-frontend/
+git remote add origin git@github.com:kelompok1-dumbways/wayshub-frontend
+git add .
+git commit -m "first commit"
+git branch -M main
+git push -u origin main
+
+# Folder wayshub-backend
+git remote add origin git@github.com:kelompok1-dumbways/wayshub-backend
+git add .
+git commit -m "first commit"
+git branch -M main
+git push -u origin main
+```
+
+3. on the web jenkins install additional plugins
+    - Go to web `http://jenkins.kelompok1.studentdumbways.my.id/` and login
+    - manage -> plugins -> available plugins -> search additional plugins
+    ![gambar](/Week2/Jenkins_Image/install-plugin-tambahan.png)
+
+4. Add Credentials
+    - Manage -> credential -> system -> globall -> add credential ->
+    - github, dockerhub, discord
+    ![gambar](/Week2/Jenkins_Image/credential.png)
+
+5. Create New job
+    - New Item -> Enter name "wayshub-backend" -> Select pipeline -> make sure trigger select *GitHub hook trigger for GITScm polling* -> Repository fill with github wayshub-backend -> save   
+   ![gambar](/Week2/Jenkins_Image/creatjob.png)
+   ![gambar](/Week2/Jenkins_Image/trigger-autoscm.png)    
+   ![gambar](/Week2/Jenkins_Image/config-pipeline-frontend.png)     
+    - New Item -> Enter name "wayshub-frontend" -> Select pipeline -> make sure trigger select *GitHub hook trigger for GITScm polling* -> Repository fill with github wayshub-frontend-> save   
+
+6. You can build now
+![gambar](/Week2/Jenkins_Image/build-pipeline-frontend.png)      
+![gambar](/Week2/Jenkins_Image/build-pipeline-backend.png)       
+![gambar](/Week2/Jenkins_Image/Hasilbuild-backend-frontend.png)
+
+7. Auto triger SCM
+    - Go to github -> repo wayshub-frontend -> settings -> Webhook -> Add webhook -> Enter the password github ->     
+    ![gambar](/Week2/Jenkins_Image/autotriger-github.png)     
+    ![gambar](/Week2/Jenkins_Image/hasilwebhook-frontend.png)
+    - do the same for the backend         
+    ![gambar](/Week2/Jenkins_Image/hasilwebhook-backend.png)
+    
+8. Check Dockerhub     
+![gambar](/Week2/Jenkins_Image/push-dockerhub.png)
+
+9. Notification discord
+    - Login discord -> Add server -> Create my own -> For me and my friend -> Enter the name Server and Create     
+    - Right click in the #general -> Edut Channel -> integrations -> Webhooks -> New Webhook -> Give it a name and Copy URL
+    ![gambar](/Week2/Jenkins_Image/config-discord.png)
+    - **This URL is stored in discord credentials**       
+![gambar](/Week2/Jenkins_Image/notification-discord.png)
+
+10. keep building until you get a table
+![gambar]
+
+
+## [Github Action]
+
+1. Setup Actions secret and variable Github Action
+    - Open Github repository wayshub-frontend -> settings -> Secrets and variables -> actions -> new repository secret   
+    Add:     
+    ![gambar](/Week2/Jenkins_Image/step-action-secrets-variable.png)
+
+    `DOCKERHUB_USERNAME` = ramdhanifauzi 
+        - Name: DOCKERHUB_USERNAME
+        - Secret: ramdhanifauzi
+        - Add secret
+    `DOCKERHUB_TOKEN` = token Docker Hub
+        - Name: DOCKERHUB_TOKEN
+        - Secret: paste token Docker Hub 
+        - Add secret
+    `SSH_PRIVATE_KEY` = private key server 2
+        - Name: SSH_PRIVATE_KEY
+        - Secret: paste private key server 2
+        - Add secret
+    `DISCORD_WEBHOOK` = URL webhook Discord
+        - Name: DISCORD_WEBHOOK
+        - Secret: paste URL webhook Discord 
+        - Add secret       
+    ![gambar](/Week2/Jenkins_Image/action-secrets-variable.png)
+    
+2. Create folder and file on the server 2
+    ```bash
+    cd ~/wayshub-app/wayshub-frontend
+    mkdir -p .github/workflows
+    nano .github/workflows/ci.yml
+    ```
+    [Script .github/workflows/ci.yml]()
+3. Push to github
+    ``` bash
+    git add .github/workflows/ci.yml
+    git commit -m "add github actions workflow"
+    git push origin production
+    ```
+4. Creat pipline github actions runner
+    - GitHub repository wayshub-frontend -> settings -> Actions -> runners -> New self-hosted runner -> Select Lunux        
+      ![gambar](/Week2/Jenkins_Image/step-runners.png)    
+      ![gambar](/Week2/Jenkins_Image/hasil-runners.png)
+    - Open server 2 and run this command    
+    ``` bash
+    # Create a folder
+    mkdir actions-runner && cd actions-runner
+
+    # Download
+    curl -o actions-runner-linux-x64-2.333.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.333.1/actions-runner-linux-x64-2.333.1.tar.gz
+
+    # Extract
+    tar xzf ./actions-runner-linux-x64-2.333.1.tar.gz
+
+    # Configure
+    ./config.sh --url https://github.com/kelompok1-dumbways/wayshub-frontend --token CBVZQVVBQI74HFRLOHRDAPDJ3TV2K
+
+    # Run
+    ./run.sh
+    ```
+5. Open `https://github.com/kelompok1-dumbways/wayshub-frontend/actions` for the progress pipeline
+![gambar](/Week2/Jenkins_Image/hasil-githubaction.png)     
+  
+6. Notification discord
+    - Setting discord    
+    ![gambar](/Week2/Jenkins_Image/setting-discord-githubaction.png)
+    - Notification    
+    ![gambar](/Week2/Jenkins_Image/notification-discord-githubaction.png)
   
