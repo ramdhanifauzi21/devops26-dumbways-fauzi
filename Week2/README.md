@@ -13,7 +13,7 @@
     - add permission: `$ chmod +x docker-install.sh`
     - run file docker-install.sh: `$ sudo ./docker-install.sh`
     
-- Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose (**STAGING**)
+- **Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose** (**STAGING**)
 
     **FOLDER STRUCTURE**
     ```
@@ -74,7 +74,7 @@
 7. try the application on the web using DNS
 
 
-- Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose (**PRODUCTION**)
+- **Deploy aplikasi Web Server, Frontend, Backend, serta Database on top docker compose** (**PRODUCTION**)
 
 1. create SERVER for deploy database     
    ![gambar](/Week2/Image/ServerCICD.png)  
@@ -172,6 +172,22 @@ networks:
          ![gambar](/Week2/Image/test-backend.png) 
     11. Try to register and login     
         ![gambar](/Week2/Image/login.png)
+
+## [Multi-Stage]
+1. Change the frontend Dockerfile to look like this        
+![gambar](/Week2/Image/multi-stage-frontend.png)
+2. Add file `nginx.conf` in the frontend            
+![gambar](/Week2/Image/frontend-nginx.png)
+3. Change the backend Dockerfile to look like this            
+![gambar](/Week2/Image/multi-stage-backend.png)
+4. Change the `nginx/default.conf` change the frontend part from port 3000 to 80        
+![gambar](/Week2/Image/change-config-nginx.png)
+5. Rebuild `docker compose up -d"
+6. try to web            
+![gambar](/Week2/Image/tes-multistage.png)
+![gambar](/Week2/Image/login-multistage.png)
+
+
 
 ## [Jenkins]
 
