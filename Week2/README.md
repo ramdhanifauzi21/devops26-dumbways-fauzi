@@ -315,7 +315,8 @@ git push -u origin main
 ![gambar](/Week2/Jenkins_Image/notification-discord.png)
 
 10. keep building until you get a table
-![gambar]
+![gambar](/Week2/Jenkins_Image/build-10-jenkins.png)
+*Sorry, I've already built 10 times but the table still hasn't appeared. Maybe I need to build more times before the table appears.*
 
 
 ## [Github Action]
@@ -389,3 +390,36 @@ git push -u origin main
     - Notification    
     ![gambar](/Week2/Jenkins_Image/notification-discord-githubaction.png)
   
+## [Certbot (Upgarade to HTTPS)]
+
+1. On the server 1 Install Certbot: `sudo apt install certbot -y`
+2. Go to the Appserver and run the command below
+    ```
+    sudo certbot certonly \
+    --manual \
+    --preferred-challenges dns \
+    -d "kelompok1.production.studentdumbways.my.id" \
+    -d "*.kelompok1.production.studentdumbways.my.id" \
+    --email email@kamu.com \
+    --agree-tos
+    ```
+3. After running the command, it will appear like this.        
+![gambar](/Week2/Image/deploy-cf-1.png) 
+    - Go to Cloudflare, add and apply the DNS TXT record, then press Enter.              
+    ![gambar](/Week2/Image/cf-1.png)
+    - *Make sure it is saved before press enter*   
+    - After pressing enter on the server 1 the DNS TXT record will appear again        
+    ![gambar](/Week2/Image/deploy-cf-2.png)
+    - Add it again to Cloudflare. Make sure it is saved before pressing enter again            
+    ![gambar](/Week2/Image/cf-2.png)
+    - If there is a notification "certificate successfully received" it means the certificate was successfully created
+    ![gambar](/Week2/Image/certificate-success.png)
+4. Add the docker-compose.yml `- /etc/latsencrypt:/etc/latsencrypt:ro` and add `ports 443:443`            
+![gambar](/Week2/Image/docker-compose-add.png)
+5. Add the `nginx/default.conf`        
+![gambar](/Week2/Image/add-nginx-default.png)
+6. try logging in on the web using HTTPS://        
+![gambar](/Week2/Image/try.png)
+![gambar](/Week2/Image/try-b.png)
+7. If you want to use https on Jenkins, the steps are the same, but install it on server 2.
+![gambar](/Week2/Image/try-jenkins.png)
