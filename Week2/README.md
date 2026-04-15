@@ -314,8 +314,8 @@ git push -u origin main
     - **This URL is stored in discord credentials**       
 ![gambar](/Week2/Jenkins_Image/notification-discord.png)
 
-10. keep building until you get a table
-![gambar](/Week2/Jenkins_Image/build-10-jenkins.png)
+10. keep building until you get a table            
+![gambar](/Week2/Jenkins_Image/build-10-jenkins.png)            
 *Sorry, I've already built 10 times but the table still hasn't appeared. Maybe I need to build more times before the table appears.*
 
 
