@@ -7,10 +7,10 @@
 
 ### Repository && Reference:
 
-[Ingress-Nginx](https://docs.nginx.com/nginx-ingress-controller/)
-[k3s docs](https://docs.k3s.io/)
-[Alvin Docs](https://github.com/RizqyAlvindra/kubernetes/tree/master/k3s)
-[Kubernetes Docs](https://kubernetes.io/docs/home/)
+[Ingress-Nginx](https://docs.nginx.com/nginx-ingress-controller/)        
+[k3s docs](https://docs.k3s.io/)        
+[Alvin Docs](https://github.com/RizqyAlvindra/kubernetes/tree/master/k3s)        
+[Kubernetes Docs](https://kubernetes.io/docs/home/)        
 
 ## Kubernetes Tasks
 
