@@ -6,6 +6,9 @@
 - create 2 VM
     - VM-1 for Master (fauzi-app)
     - VM-2 for Worker(fauzi-gateway)
+
+![gambar](/Week4/Image/setup-server.png)
+
 ---
 
 ### Folder Structure on the Master Server
@@ -49,7 +52,7 @@ mkdir -p ~/kubernetes/ingress
 mkdir -p ~/kubernetes/cert
 ```
 ---
-#### Creating a Kubernetes Cluster (K3s) consisting of 2 nodes: one master `(fauzi-app)` and one worker `(fauzi-gateway)`
+### 1. Creating a Kubernetes Cluster (K3s) consisting of 2 nodes: one master `(fauzi-app)` and one worker `(fauzi-gateway)`
 
 - Master (fauzi-app)
 ```sh
@@ -82,8 +85,10 @@ systemctl status k3s
     k3s kubectl get nodes
     
     kubectl get nodes
-    kubectl get pods -A
-  
+    kubectl get pods -A                
+```
+  ![gambar](/Week4/Image/kubectl-access.png)
+```sh                
   # Configure kubectl access for the current user
     mkdir -p ~/.kube
     sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
@@ -102,7 +107,8 @@ $ kubectl get pods -A
 
 # get token (MASTER)
 $ sudo cat /var/lib/rancher/k3s/server/token
-```
+```                
+![gambar](/Week4/Image/instal-k3s-master.png)            
 
 - Worker (fauzi-gateway)
 
@@ -130,78 +136,124 @@ curl -sfL https://get.k3s.io | \
 
 # Restart
 systemctl restart k3s-agent
-```
+```            
+![gambar](/Week4/Image/worker-join.png)                
 
 - Verify on the master server
 ```
 kubectl get nodes
-```
----
+```                
+![gambar](/Week4/Image/verify-nodes-master.png)                            
 
-#### Install Ingress Nginx (With helm)
+---                 
+### 2. Install Ingress Nginx (With helm)
 
 - Install helm
 ```
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
 chmod 700 get_helm.sh
 ./get_helm.sh
-```
+```                
+![gambar](/Week4/Image/instal-helm.png)  
 
-- Install Ingress Nginx
-```sh
-# Add the Ingress Nginx Helm repository and update it
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
+- Configure Helm to use the k3s cluster
+    - navigate to the k3s configuration directory `cd /etc/rancher/k3s`, Make sure the `k3s.yaml` file is exists                   cd         
+    ![gambar]()             
+    - Export the kubeconfig export KUBECONFIG=/etc/rancher/k3s/k3s.yaml                    
+    ![gambar]()
+    - Helm ready to use                    
+    ![gambar]()
 
-# Create namespace for Ingress Nginx
-kubectl create namespace ingress-nginx
+- Remove default traefik from k3s
+    - Navigate to the k3s Manifests Directory `cd /var/lib/rancher/k3s/server/manifests`, Make sure the traefik.yaml file is present
+    - Remove traefik and traefik CRD fron cluster: `rm -rf traefik.yaml`
+    - Uninstall traefik and traefik CRD from the cluster: `helm uninstall traefik traefik-crd -n kube-system`            
+    ![gambar]()
 
-# Replace MASTER_IP or WORKER_IP with the node IP where Ingress will run
-helm install ingress-nginx ingress-nginx/ingress-nginx \
-  --namespace ingress-nginx \
-  --set controller.service.type=LoadBalancer \
-  --set controller.service.externalIPs[0]=WORKER_IP
 
-# Verification
-  # Check running pods in the ingress-nginx namespace
+- Install Ingress Nginx with helm
+    - Add the Ingress Nginx Helm repository and update it
+    ```sh
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
+
+    # Create namespace for Ingress Nginx
+    kubectl create namespace ingress-nginx
+    ```                    
+    ![gambar](/Week4/Image/install-ingress-1.png)
+    - Install ingress nginx
+    ```sh
+    # Replace MASTER_IP or WORKER_IP with the node IP where Ingress will run (I use WORKER_IP)
+    helm install ingress-nginx ingress-nginx/ingress-nginx \
+      --namespace ingress-nginx \
+      --set controller.service.type=LoadBalancer \
+      --set controller.service.externalIPs[0]=WORKER_IP
+    ```            
+    ![gambar](/Week4/Image/install-ingress-2.png)
+    - Verification ingress nginx
+    ```sh
+    # Check running pods in the ingress-nginx namespace
     kubectl get pods -n ingress-nginx
 
-  # Check services in the ingress-nginx namespace
+    # Check services in the ingress-nginx namespace
     kubectl get svc -n ingress-nginx
 
-  # Check which node the Ingress controller is running on
+    # Check which node the Ingress controller is running on
     kubectl get pods -n ingress-nginx -o wide
-```
+    ```
+    ![gambar]()
+
+    - run nginx on the web                
+    ![gambar](/Week4/Image/test-nginx-1.png)                
+    ![gambar](/Week4/Image/test-nginx-2.png)
+  
 ---
 
-#### Setup Persistent Volume for Database
+### 3. Setup Persistent Volume for Database
 - Check default k3s storageclass: `kubectl get storageclass`
-- Create namespace: `kubectl create namespace production`
-- Create file `~/kubernetes/db/mysql-pvc.yaml` and copy this program [mysql-pvc.yaml]()
+- Create namespace: `kubectl create namespace production`            
+![gambar](/Week4/Image/create-namespace-production.png)
+- Create file `~/kubernetes/db/mysql-pvc.yaml` and copy this program [mysql-pvc.yaml](https://github.com/ramdhanifauzi21/devops26-dumbways-fauzi/blob/main/Week4/lib/mysql-pvc.yaml)
 - Apply configuration and verify PVC
   ```bash
   kubectl apply -f ~/kubernetes/db/mysql-pvc.yaml
   kubectl get pvc -n production
   ```
+  ![gambar](/Week4/Image/verify-pvc.png)
 ---
-#### Deploy MySQL with StatefulSet & Secrets
+### 4. Deploy MySQL with StatefulSet & Secrets
 
-##### Create Kubernetes Secret
+###### Create Kubernetes Secret
 - Generate base64 values
   ```
   echo -n 'your_pw' | base64               # Password
   echo -n 'your_username' | base64         # Username
   echo -n 'your_databasename' | base64     # Database
   ```
-- Create file: `~/kubernetes/db/mysql-secret.yaml` and copy this program[mysql-secret.yaml]()
+- Create file: `~/kubernetes/db/mysql-secret.yaml` 
+```sh
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: production
+type: Opaque
+data:
+  mysql-root-password: root_pw   
+  mysql-password:      database_pw   
+  mysql-database:      ZHVtYndheXM=   # Database name
+  mysql-user:          ZHVtYndheXM=   # Username
+```
 - Apply configuration and verify secret
   ```
   kubectl apply -f ~/kubernetes/db/mysql-secret.yaml
   kubectl get secret -n production
   ```
+![gambar](/Week4/Image/verify-secret.png)
 
 ##### Create Mysql statefulset
-- Create file `~/kubernetes/db/mysql-statefulset.yaml` and copy this program[mysql-statefulset.yaml]()
+- Create file `~/kubernetes/db/mysql-statefulset.yaml` and copy this program[mysql-statefulset.yaml]([/Week4/lib
+/mysql-statefulset.yaml](https://github.com/ramdhanifauzi21/devops26-dumbways-fauzi/blob/main/Week4/lib/mysql-statefulset.yaml))
 - Apply configuration and verify
   ```
   kubectl apply -f ~/kubernetes/db/mysql-statefulset.yaml
@@ -222,15 +274,8 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
   EXIT;
   ```
 ---
-#### Config ingress ruless
-- Create file `~/kubernetes/ingress/app-ingress.yaml ` and copy this program
-- Apply and verify 
-  ```
-  kubectl apply -f ~/kubernetes/ingress/app-ingress.yaml
-  kubectl get ingress -n production
-  ```
----
-#### Deploy application (Frontend & backend)
+
+### 5. Deploy application (Frontend & backend)
 
 ##### Deploy frontend
 - Create file `~/kubernetes/app/frontend.yaml` and copy this program
@@ -255,8 +300,16 @@ npx sequelize-cli db:migrate
 exit
 ```
 ---
+### 6. Config ingress ruless
+- Create file `~/kubernetes/ingress/app-ingress.yaml ` and copy this program
+- Apply and verify 
+  ```
+  kubectl apply -f ~/kubernetes/ingress/app-ingress.yaml
+  kubectl get ingress -n production
+  ```
+---
 
-#### Create wildcard certificate
+### 7. Create wildcard certificate
 - Create file: `~/kubernetes/cert/wildcard-cert.yaml` and copy this program
 - Apply configuration and cerify certificate
   ```
