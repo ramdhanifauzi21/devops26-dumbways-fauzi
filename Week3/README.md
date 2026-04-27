@@ -36,7 +36,7 @@ Automation/
 
 ## [Terraform]
 1. Open the local server (I use WSL)
-2. Navigate to the `Ansible/idcloudhost/` folder
+2. Navigate to the `Ansible/` folder
     - Create providers.tf file [providers.tf](https://github.com/ramdhanifauzi21/Automation/blob/main/Terraform/idcloudhost/providers.tf)
     - Create terraform.tfvars file (this file is filled with the billing ID and token and password)
       ```tf
