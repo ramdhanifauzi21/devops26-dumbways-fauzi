@@ -56,14 +56,14 @@ mkdir -p ~/kubernetes/cert
 
 - Master (fauzi-app)
 ```sh
-# log in as root
+# login as root
 sudo su
 
 # Set hostname
 hostnamectl set-hostname master
 echo master > /etc/hostname
 
-# Install K3s full or install K3s
+# Install K3s
 curl -sfL https://get.k3s.io | sh -
 
 # Cek status
@@ -139,7 +139,7 @@ systemctl restart k3s-agent
 ```            
 ![gambar](/Week4/Image/worker-join.png)                
 
-- Verify on the master server
+- Verify nodes on the master server
 ```
 kubectl get nodes
 ```                
@@ -190,6 +190,7 @@ chmod 700 get_helm.sh
       --set controller.service.externalIPs[0]=WORKER_IP
     ```            
     ![gambar](/Week4/Image/install-ingress-2.png)
+    
     - Verification ingress nginx
     ```sh
     # Check running pods in the ingress-nginx namespace
@@ -252,33 +253,22 @@ data:
 ![gambar](/Week4/Image/verify-secret.png)
 
 ##### Create Mysql statefulset
-- Create file `~/kubernetes/db/mysql-statefulset.yaml` and copy this program[mysql-statefulset.yaml]([/Week4/lib
-/mysql-statefulset.yaml](https://github.com/ramdhanifauzi21/devops26-dumbways-fauzi/blob/main/Week4/lib/mysql-statefulset.yaml))
+- Create file `~/kubernetes/db/mysql-statefulset.yaml` and copy this program[mysql-statefulset.yaml]([mysql-statefulset.yaml](https://github.com/ramdhanifauzi21/devops26-dumbways-fauzi/blob/main/Week4/lib/mysql-statefulset.yaml))
 - Apply configuration and verify
   ```
   kubectl apply -f ~/kubernetes/db/mysql-statefulset.yaml
   kubectl get pods -n production
   kubectl get pvc -n production
   ```
-- Grant database access
-  ```
-  # Access the MySQL container
-  kubectl exec -it -n production mysql-0 -- bash
+  ![gambar]()
 
-  # Login to MySQL
-  mysql -u root -pFauzi123!
-
-  #SQL
-  GRANT ALL PRIVILEGES ON dumbways.* TO 'dumbways'@'%';
-  FLUSH PRIVILEGES;
-  EXIT;
-  ```
 ---
 
 ### 5. Deploy application (Frontend & backend)
 
 ##### Deploy frontend
-- Create file `~/kubernetes/app/frontend.yaml` and copy this program
+- Create file `~/kubernetes/app/frontend.yaml` and copy this program            
+![gambar]()
 ##### Deploy backend
 - Create file: ~/kubernetes/db/backend-config.yaml and copy this program
 - Create file `~/kubernetes/app/backend.yaml` and copy this program
@@ -289,16 +279,9 @@ kubectl apply -f ~/kubernetes/db/backend-config.yaml
 kubectl apply -f ~/kubernetes/app/frontend.yaml
 kubectl apply -f ~/kubernetes/app/backend.yaml
 kubectl get pods -n production
-```
+```        
+![gambar]()
 
-##### Run database migration
-```
-kubectl exec -it -n production deployment/backend -- sh
-
-npx sequelize-cli db:migrate
-
-exit
-```
 ---
 ### 6. Config ingress ruless
 - Create file `~/kubernetes/ingress/app-ingress.yaml ` and copy this program
@@ -307,17 +290,8 @@ exit
   kubectl apply -f ~/kubernetes/ingress/app-ingress.yaml
   kubectl get ingress -n production
   ```
+![gambar]()
 ---
 
-### 7. Create wildcard certificate
-- Create file: `~/kubernetes/cert/wildcard-cert.yaml` and copy this program
-- Apply configuration and cerify certificate
-  ```
-  kubectl apply -f ~/kubernetes/cert/cluster-issuer.yaml
-  kubectl apply -f ~/kubernetes/cert/wildcard-cert.yaml
-
-  # Monitor certificate status until READY = True
-  kubectl get certificate -n production -w
-  ```
 
 
