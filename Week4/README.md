@@ -157,8 +157,7 @@ chmod 700 get_helm.sh
 ![gambar](/Week4/Image/instal-helm.png)  
 
 - Configure Helm to use the k3s cluster
-    - navigate to the k3s configuration directory `cd /etc/rancher/k3s`, Make sure the `k3s.yaml` file is exists                   cd         
-    ![gambar]()             
+    - navigate to the k3s configuration directory `cd /etc/rancher/k3s`, Make sure the `k3s.yaml` file is exists                   cd                  
     - Export the kubeconfig export KUBECONFIG=/etc/rancher/k3s/k3s.yaml                    
     ![gambar]()
     - Helm ready to use                    
@@ -202,7 +201,7 @@ chmod 700 get_helm.sh
     # Check which node the Ingress controller is running on
     kubectl get pods -n ingress-nginx -o wide
     ```
-    ![gambar]()
+    ![gambar](/Week4/Image/verify-ingress.png)
 
     - run nginx on the web                
     ![gambar](/Week4/Image/test-nginx-1.png)                
